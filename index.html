@@ -351,7 +351,7 @@ function chip(m){
     ${ft}</div>`;
 }
 function renderSchedule(){
-  const start=new Date("2026-06-08"), end=new Date("2026-07-19"); // Mon..Sun 跨6周
+  const start=new Date("2026-06-08"), end=new Date("2026-07-20"); // 至决赛（北京时间 7/20 凌晨）
   const wd=["一","二","三","四","五","六","日"];
   let html='<div class="cal">'+wd.map(w=>`<div class="wd">周${w}</div>`).join("");
   let d=new Date(start);
@@ -364,6 +364,7 @@ function renderSchedule(){
     d=addDays(d,1);
   }
   html+="</div>";
+  html+='<div class="note">比赛时间均为北京时间</div>';
   root.innerHTML=html;
 }
 
