@@ -152,9 +152,11 @@
   <div id="view"></div>
 </div>
 
-<!-- 48 队真实名单：由 build_all.py 生成 data/squads.js。没有该文件时回退内置仿真数据。 -->
+<!-- 真实数据：data/ 目录和根目录两个位置都尝试加载（404 无害），兼容不同部署结构 -->
 <script src="data/squads.js"></script>
+<script src="squads.js"></script>
 <script src="data/fixtures.js"></script>
+<script src="fixtures.js"></script>
 <script>
 /* ==================================================================
    仿真数据层（结构即未来真实 JSON 的 schema）
