@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 世界杯 · 赛程 & 花名册</title>
+<style>
+  :root{
+    --bg:#0c1118; --grad:#16202c; --panel:#131a24; --panel2:#0f151d; --line:#222d3a; --line2:#2c3a49;
+    --txt:#e7edf5; --dim:#8a99ab; --dimmer:#5d6b7d;
+    --accent:#75aadb; --gold:#ffd84d; --val:#7ee0b8; --live:#46c98b; --hover:#18222e;
+    --gk:#e8c84a; --df:#6fb1e0; --mf:#7ed99a; --fw:#e88a8a;
+  }
+  html[data-theme="light"]{
+    --hover:#e8eef5;
+    --bg:#eef1f6; --grad:#ffffff; --panel:#ffffff; --panel2:#f2f5f9; --line:#dde3ea; --line2:#c8d2dd;
+    --txt:#19222e; --dim:#5a6b7d; --dimmer:#93a0ae;
+    --accent:#2f6fb0; --gold:#b8860b; --val:#1f9d6b; --live:#2faa6e;
+    --gk:#b8860b; --df:#2f6fb0; --mf:#2f9e5c; --fw:#c5564f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1300px 800px at 50% -15%,var(--grad) 0%,var(--bg) 65%);
+    color:var(--txt); font:13px/1.45 -apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif;
+    -webkit-font-smoothing:antialiased; padding:14px; min-height:100vh; transition:background .25s,color .25s}
+  .wrap{max-width:1640px; margin:0 auto}
+  .en{font-weight:700} .zh{color:var(--dim); font-weight:400; font-size:.82em; margin-left:5px}
+
+  /* ===== TOP BAR / TABS ===== */
+  .topbar{display:flex; align-items:center; gap:18px; margin-bottom:14px}
+  .brand{font-size:18px; font-weight:800; letter-spacing:.5px}
+  .brand small{color:var(--dim); font-weight:500; font-size:12px; margin-left:8px}
+  .tabs{display:flex; gap:4px; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:4px}
+  .tabs button{background:none;border:none;color:var(--dim);padding:7px 18px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600}
+  .tabs button.on{background:var(--accent);color:#0a0f15}
+  .back{background:var(--panel);border:1px solid var(--line2);color:var(--txt);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+  .back:hover{border-color:var(--accent)}
+  .iconbtn{margin-left:auto;background:var(--panel);border:1px solid var(--line2);color:var(--txt);
+    width:36px;height:36px;border-radius:9px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .iconbtn:hover{border-color:var(--accent)}
+
+  /* ===== CALENDAR ===== */
+  .cal{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+  .wd{color:var(--dimmer); font-size:11px; text-transform:uppercase; letter-spacing:1px; text-align:center; padding:2px 0}
+  .day{background:var(--panel); border:1px solid var(--line); border-radius:9px; min-height:104px; padding:6px; display:flex; flex-direction:column}
+  .day.empty{background:transparent; border:1px dashed var(--line); opacity:.5}
+  .day .dnum{font-size:12px; font-weight:700; color:var(--dim); display:flex; justify-content:space-between; margin-bottom:4px}
+  .day .dnum .mo{color:var(--gold); font-size:10px}
+  .day.today{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset}
+  .m{display:flex; align-items:center; gap:5px; padding:3px 4px; border-radius:5px; cursor:pointer; font-size:11px; margin-bottom:2px; background:var(--panel2); border:1px solid var(--line)}
+  .m:hover{border-color:var(--accent); background:var(--hover)}
+  .m .tm{color:var(--dimmer); font-size:9.5px; width:30px; flex:0 0 auto}
+  .m .sd{flex:1; display:flex; align-items:center; justify-content:center; gap:3px; min-width:0}
+  .m .sd .c{font-weight:700} .m .sd .fl{font-size:12px}
+  .m .vs{color:var(--dimmer); font-size:9px}
+  .m .sc{font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:1px}
+  .m .ft{color:var(--dimmer); font-size:8.5px; border:1px solid var(--line2); border-radius:3px; padding:0 3px}
+  .m.live{border-color:var(--live)} .m.live .ft{color:var(--live); border-color:var(--live)}
+  .m.ko{cursor:default; opacity:.72} .m.ko:hover{border-color:var(--line);background:var(--panel2)}
+  .roundtag{font-size:9px; color:var(--dimmer); padding:1px 0 3px}
+
+  /* ===== TEAMS GROUPS ===== */
+  .groups{display:grid; grid-template-columns:repeat(4,1fr); gap:12px}
+  .grp{background:var(--panel); border:1px solid var(--line); border-radius:11px; overflow:hidden}
+  .grp h4{background:var(--panel2); padding:7px 12px; font-size:12px; letter-spacing:1px; color:var(--gold); border-bottom:1px solid var(--line)}
+  .tcard{display:flex; align-items:center; gap:9px; padding:8px 11px; border-bottom:1px solid var(--line); cursor:pointer}
+  .tcard:last-child{border-bottom:none}
+  .tcard:hover{background:var(--hover)}
+  .tcard .fl{font-size:22px; flex:0 0 auto}
+  .tcard .info{flex:1; min-width:0}
+  .tcard .info .nm{font-size:14px}
+  .tcard .info .sub{color:var(--dimmer); font-size:10.5px; margin-top:1px}
+  .tcard .rk{color:var(--gold); font-weight:800; font-size:13px; text-align:right}
+  .tcard .rk small{display:block; color:var(--dimmer); font-weight:500; font-size:9px}
+
+  /* ===== TEAM ROSTER PAGE ===== */
+  .hd{display:flex; gap:14px; margin-bottom:12px; align-items:stretch}
+  .crest{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 22px; display:flex; align-items:center; gap:16px; min-width:330px}
+  .crest .bigfl{font-size:54px}
+  .crest .nm{font-size:26px; font-weight:800}
+  .crest .nm .zh{font-size:15px}
+  .crest .sub{color:var(--dim); font-size:12px; margin-top:3px}
+  .crest .rk{display:inline-flex; gap:5px; margin-top:7px; background:var(--panel2); border:1px solid var(--line); border-radius:20px; padding:3px 10px; font-size:12px}
+  .crest .rk b{color:var(--gold)}
+  .stats{flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  .stat{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; justify-content:center}
+  .stat .v{font-size:19px; font-weight:800} .stat .v small{font-size:12px;color:var(--dim)}
+  .stat .k{font-size:10px; color:var(--dimmer); text-transform:uppercase; letter-spacing:.4px; margin-top:2px}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+  table{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
+  thead th{background:var(--panel2); color:var(--dimmer); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:.4px; padding:8px 6px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap}
+  thead th.l{text-align:left; padding-left:12px}
+  tbody td{padding:6px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap}
+  tbody tr.pl{cursor:pointer} tbody tr.pl:hover{background:var(--hover)}
+  .grprow td{background:var(--panel2); color:var(--dim); font-weight:700; font-size:11px; text-align:left; padding:5px 12px; text-transform:uppercase; letter-spacing:1px}
+  td.num{color:var(--dim); font-weight:800; width:30px}
+  td.name{text-align:left; padding-left:12px}
+  td.name .cap{color:var(--gold); font-size:10px; margin-left:3px}
+  td.club{text-align:left; color:var(--dim)} td.club .lg{color:var(--dimmer); font-size:10px; margin-left:3px}
+  td.val{color:var(--val); font-weight:700} td.dim{color:var(--dim)}
+  .bar{height:5px; background:var(--line); border-radius:3px; overflow:hidden; width:50px; display:inline-block; vertical-align:middle}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,#3d8f6a,#7ee0b8)}
+
+  /* ===== MATCH (H2H) PAGE ===== */
+  .mhd{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 22px; display:flex; align-items:center; justify-content:center; gap:26px; margin-bottom:12px}
+  .mhd .side{display:flex; align-items:center; gap:12px; cursor:pointer}
+  .mhd .side.r{flex-direction:row-reverse}
+  .mhd .side .fl{font-size:46px}
+  .mhd .side .nm{font-size:22px; font-weight:800}
+  .mhd .side .nm .zh{font-size:13px}
+  .mhd .side:hover .nm{color:var(--accent)}
+  .mhd .sc{font-size:34px; font-weight:800; letter-spacing:3px}
+  .mhd .mid{text-align:center} .mhd .mid .meta{color:var(--dim); font-size:11px; margin-top:4px}
+  .mlive{color:var(--live); font-weight:700}
+  .h2h{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .xi h3{font-size:13px; color:var(--dim); padding:4px 2px 8px; display:flex; gap:8px; align-items:center}
+  .compare{display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 16px; margin-bottom:12px}
+  .compare .lab{text-align:center; color:var(--dimmer); font-size:10px; text-transform:uppercase; letter-spacing:.5px}
+  .compare .cv{font-weight:800; font-size:15px} .compare .cv.l{text-align:right} .compare .cv.r{text-align:left}
+  .note{color:var(--dimmer); font-size:11px; text-align:center; margin-top:14px}
+
+  /* ===== PLAYER DETAIL DRAWER ===== */
+  tbody tr.psel{background:rgba(255,216,77,.10); box-shadow:inset 3px 0 0 var(--gold)}
+  .pdrawer{position:fixed; bottom:14px; left:50%; transform:translateX(-50%); width:min(1120px,94vw);
+    background:var(--panel); border:1px solid #34424f; border-radius:14px; box-shadow:0 14px 46px rgba(0,0,0,.6);
+    padding:14px 18px; display:none; align-items:center; gap:18px; z-index:40}
+  .pdrawer.show{display:flex}
+  .pdrawer .pip{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:19px;color:#0a0f15;flex:0 0 auto}
+  .pdrawer .who{min-width:170px}
+  .pdrawer .who .nm{font-size:17px;font-weight:800}
+  .pdrawer .who .nm .zh{font-size:12px}
+  .pdrawer .who .sub{color:var(--dim);font-size:11px;margin-top:3px}
+  .pdrawer .ds{display:flex;gap:22px;flex-wrap:wrap;flex:1}
+  .pdrawer .ds .d{text-align:center}
+  .pdrawer .ds .d .v{font-size:16px;font-weight:800}
+  .pdrawer .ds .d .k{font-size:9.5px;color:var(--dimmer);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+  .pdrawer .pclose{background:none;border:1px solid var(--line2);color:var(--dim);border-radius:7px;cursor:pointer;padding:6px 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">2026 FIFA World Cup</div>
+    <div class="tabs" id="tabs">
+      <button data-t="schedule" class="on">赛程</button>
+      <button data-t="teams">球队</button>
+    </div>
+    <div id="backslot"></div>
+    <button class="iconbtn" id="themeBtn" title="切换白天/黑夜">🌙</button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<!-- 48 队真实名单：由 build_all.py 生成 data/squads.js。没有该文件时回退内置仿真数据。 -->
+<script src="data/squads.js"></script>
+<script src="data/fixtures.js"></script>
+<script>
+/* ==================================================================
+   仿真数据层（结构即未来真实 JSON 的 schema）
+   ================================================================== */
+const TEAMS=[
+ {c:"CZE",en:"Czech Republic",zh:"捷克",f:"🇨🇿",rk:38,grp:"A"},
+ {c:"KOR",en:"South Korea",zh:"韩国",f:"🇰🇷",rk:23,grp:"A"},
+ {c:"MEX",en:"Mexico",zh:"墨西哥",f:"🇲🇽",rk:14,grp:"A"},
+ {c:"RSA",en:"South Africa",zh:"南非",f:"🇿🇦",rk:56,grp:"A"},
+ {c:"BIH",en:"Bosnia & Herz.",zh:"波黑",f:"🇧🇦",rk:74,grp:"B"},
+ {c:"CAN",en:"Canada",zh:"加拿大",f:"🇨🇦",rk:30,grp:"B"},
+ {c:"QAT",en:"Qatar",zh:"卡塔尔",f:"🇶🇦",rk:35,grp:"B"},
+ {c:"SUI",en:"Switzerland",zh:"瑞士",f:"🇨🇭",rk:19,grp:"B"},
+ {c:"BRA",en:"Brazil",zh:"巴西",f:"🇧🇷",rk:5,grp:"C"},
+ {c:"HAI",en:"Haiti",zh:"海地",f:"🇭🇹",rk:87,grp:"C"},
+ {c:"MAR",en:"Morocco",zh:"摩洛哥",f:"🇲🇦",rk:12,grp:"C"},
+ {c:"SCO",en:"Scotland",zh:"苏格兰",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",rk:39,grp:"C"},
+ {c:"AUS",en:"Australia",zh:"澳大利亚",f:"🇦🇺",rk:26,grp:"D"},
+ {c:"PAR",en:"Paraguay",zh:"巴拉圭",f:"🇵🇾",rk:50,grp:"D"},
+ {c:"TUR",en:"Turkey",zh:"土耳其",f:"🇹🇷",rk:27,grp:"D"},
+ {c:"USA",en:"USA",zh:"美国",f:"🇺🇸",rk:16,grp:"D"},
+ {c:"CIV",en:"Ivory Coast",zh:"科特迪瓦",f:"🇨🇮",rk:42,grp:"E"},
+ {c:"CUW",en:"Curaçao",zh:"库拉索",f:"🇨🇼",rk:82,grp:"E"},
+ {c:"ECU",en:"Ecuador",zh:"厄瓜多尔",f:"🇪🇨",rk:24,grp:"E"},
+ {c:"GER",en:"Germany",zh:"德国",f:"🇩🇪",rk:9,grp:"E"},
+ {c:"JPN",en:"Japan",zh:"日本",f:"🇯🇵",rk:17,grp:"F"},
+ {c:"NED",en:"Netherlands",zh:"荷兰",f:"🇳🇱",rk:7,grp:"F"},
+ {c:"SWE",en:"Sweden",zh:"瑞典",f:"🇸🇪",rk:40,grp:"F"},
+ {c:"TUN",en:"Tunisia",zh:"突尼斯",f:"🇹🇳",rk:41,grp:"F"},
+ {c:"BEL",en:"Belgium",zh:"比利时",f:"🇧🇪",rk:8,grp:"G"},
+ {c:"EGY",en:"Egypt",zh:"埃及",f:"🇪🇬",rk:32,grp:"G"},
+ {c:"IRN",en:"Iran",zh:"伊朗",f:"🇮🇷",rk:20,grp:"G"},
+ {c:"NZL",en:"New Zealand",zh:"新西兰",f:"🇳🇿",rk:89,grp:"G"},
+ {c:"CPV",en:"Cape Verde",zh:"佛得角",f:"🇨🇻",rk:70,grp:"H"},
+ {c:"ESP",en:"Spain",zh:"西班牙",f:"🇪🇸",rk:3,grp:"H"},
+ {c:"KSA",en:"Saudi Arabia",zh:"沙特",f:"🇸🇦",rk:58,grp:"H"},
+ {c:"URU",en:"Uruguay",zh:"乌拉圭",f:"🇺🇾",rk:11,grp:"H"},
+ {c:"FRA",en:"France",zh:"法国",f:"🇫🇷",rk:2,grp:"I"},
+ {c:"IRQ",en:"Iraq",zh:"伊拉克",f:"🇮🇶",rk:57,grp:"I"},
+ {c:"NOR",en:"Norway",zh:"挪威",f:"🇳🇴",rk:33,grp:"I"},
+ {c:"SEN",en:"Senegal",zh:"塞内加尔",f:"🇸🇳",rk:18,grp:"I"},
+ {c:"ALG",en:"Algeria",zh:"阿尔及利亚",f:"🇩🇿",rk:36,grp:"J"},
+ {c:"ARG",en:"Argentina",zh:"阿根廷",f:"🇦🇷",rk:1,grp:"J"},
+ {c:"AUT",en:"Austria",zh:"奥地利",f:"🇦🇹",rk:25,grp:"J"},
+ {c:"JOR",en:"Jordan",zh:"约旦",f:"🇯🇴",rk:62,grp:"J"},
+ {c:"COD",en:"DR Congo",zh:"刚果(金)",f:"🇨🇩",rk:60,grp:"K"},
+ {c:"COL",en:"Colombia",zh:"哥伦比亚",f:"🇨🇴",rk:13,grp:"K"},
+ {c:"POR",en:"Portugal",zh:"葡萄牙",f:"🇵🇹",rk:6,grp:"K"},
+ {c:"UZB",en:"Uzbekistan",zh:"乌兹别克斯坦",f:"🇺🇿",rk:54,grp:"K"},
+ {c:"CRO",en:"Croatia",zh:"克罗地亚",f:"🇭🇷",rk:10,grp:"L"},
+ {c:"ENG",en:"England",zh:"英格兰",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",rk:4,grp:"L"},
+ {c:"GHA",en:"Ghana",zh:"加纳",f:"🇬🇭",rk:45,grp:"L"},
+ {c:"PAN",en:"Panama",zh:"巴拿马",f:"🇵🇦",rk:31,grp:"L"},
+];
+const GL="ABCDEFGHIJKL";
+TEAMS.forEach(t=>{t.st=Math.max(42,Math.round(94-t.rk*0.7));}); // 兜底生成强度
+const TMAP=Object.fromEntries(TEAMS.map(t=>[t.c,t]));
+
+/* 明星球员（增强辨识度，其余程序生成） */
+const STARS={
+ ARG:[{num:10,en:"Lionel Messi",zh:"梅西",pos:"FW",val:25,cap:1},{num:22,en:"Lautaro Martínez",zh:"劳塔罗",pos:"FW",val:90},{num:5,en:"Enzo Fernández",zh:"恩佐",pos:"MF",val:90},{num:9,en:"Julián Álvarez",zh:"阿尔瓦雷斯",pos:"FW",val:90},{num:23,en:"E. Martínez",zh:"马丁内斯",pos:"GK",val:32}],
+ FRA:[{num:10,en:"Kylian Mbappé",zh:"姆巴佩",pos:"FW",val:180,cap:1},{num:8,en:"A. Tchouaméni",zh:"楚阿梅尼",pos:"MF",val:80},{num:7,en:"A. Griezmann",zh:"格列兹曼",pos:"FW",val:35},{num:5,en:"W. Saliba",zh:"萨利巴",pos:"DF",val:80}],
+ BRA:[{num:7,en:"Vinícius Jr.",zh:"维尼修斯",pos:"FW",val:170,cap:1},{num:10,en:"Rodrygo",zh:"罗德里戈",pos:"FW",val:90},{num:11,en:"Raphinha",zh:"拉菲尼亚",pos:"FW",val:70},{num:9,en:"Endrick",zh:"恩德里克",pos:"FW",val:60},{num:1,en:"Alisson",zh:"阿利松",pos:"GK",val:30}],
+ ENG:[{num:10,en:"Jude Bellingham",zh:"贝林厄姆",pos:"MF",val:180,cap:1},{num:9,en:"Harry Kane",zh:"凯恩",pos:"FW",val:90},{num:7,en:"Bukayo Saka",zh:"萨卡",pos:"FW",val:140},{num:11,en:"Phil Foden",zh:"福登",pos:"MF",val:130}],
+ ESP:[{num:19,en:"Lamine Yamal",zh:"亚马尔",pos:"FW",val:200,cap:1},{num:9,en:"Gavi",zh:"加维",pos:"MF",val:90},{num:16,en:"Rodri",zh:"罗德里",pos:"MF",val:120},{num:7,en:"Á. Morata",zh:"莫拉塔",pos:"FW",val:25}],
+ POR:[{num:7,en:"Cristiano Ronaldo",zh:"C罗",pos:"FW",val:12,cap:1},{num:8,en:"Bruno Fernandes",zh:"B费",pos:"MF",val:70},{num:11,en:"Rafael Leão",zh:"莱昂",pos:"FW",val:80},{num:10,en:"Bernardo Silva",zh:"B席",pos:"MF",val:70}],
+ GER:[{num:10,en:"Jamal Musiala",zh:"穆西亚拉",pos:"FW",val:140,cap:1},{num:17,en:"Florian Wirtz",zh:"维尔茨",pos:"MF",val:140},{num:6,en:"Joshua Kimmich",zh:"基米希",pos:"MF",val:55},{num:7,en:"Kai Havertz",zh:"哈弗茨",pos:"FW",val:65}],
+ NED:[{num:4,en:"Virgil van Dijk",zh:"范戴克",pos:"DF",val:30,cap:1},{num:11,en:"Cody Gakpo",zh:"加克波",pos:"FW",val:70},{num:21,en:"Frenkie de Jong",zh:"德容",pos:"MF",val:80},{num:10,en:"Memphis Depay",zh:"德佩",pos:"FW",val:25}],
+};
+
+/* 俱乐部库 */
+const CLUBS=[["Real Madrid","皇家马德里"],["Barcelona","巴塞罗那"],["Man City","曼城"],["Arsenal","阿森纳"],["Liverpool","利物浦"],["Bayern","拜仁"],["PSG","巴黎"],["Inter","国际米兰"],["Juventus","尤文图斯"],["Atlético","马竞"],["Chelsea","切尔西"],["Man Utd","曼联"],["Dortmund","多特"],["Leverkusen","勒沃库森"],["Napoli","那不勒斯"],["Tottenham","热刺"],["Benfica","本菲卡"],["Porto","波尔图"],["Ajax","阿贾克斯"],["Sevilla","塞维利亚"],["Marseille","马赛"],["Newcastle","纽卡斯尔"],["AC Milan","AC米兰"],["Roma","罗马"]];
+const ENF=["Lucas","Marco","Diego","Mateo","Bruno","Pablo","André","Felix","Hugo","Iván","Leon","Milan","Omar","Pedro","Rafael","Samuel","Tomás","Victor","Yusuf","Karim","Noah","Eric","Dani","Jan"];
+const ENL=["Silva","Santos","Moreno","García","López","Müller","Novák","Kovač","Hassan","Diallo","Okafor","Tanaka","Kim","Nguyen","Ali","Schmidt","Rossi","Costa","Méndez","Vidal","Horvat","Petrov","Sow","Traoré"];
+const ZHL=["席尔瓦","桑托斯","莫雷诺","加西亚","洛佩斯","穆勒","诺瓦克","科瓦奇","哈桑","迪亚洛","奥卡福","田中","金","阮","阿里","施密特","罗西","科斯塔","门德斯","比达尔","霍尔瓦特","彼得罗夫","索乌","特拉奥雷"];
+
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rng(seed){let s=seed>>>0;return()=>{s=(s+0x6D2B79F5)|0;let t=Math.imul(s^s>>>15,1|s);t=(t+Math.imul(t^t>>>7,61|t))^t;return((t^t>>>14)>>>0)/4294967296;};}
+const TODAY=new Date();   // 真实今天：日历高亮当天；赛事未开始时无高亮属正常
+function age(b){if(!b)return "–";const d=new Date(b);let a=TODAY.getFullYear()-d.getFullYear();if(TODAY<new Date(TODAY.getFullYear(),d.getMonth(),d.getDate()))a--;return a;}
+
+const _cache={};
+function squad(code){
+  if(_cache[code])return _cache[code];
+  if(window.REAL_SQUADS&&window.REAL_SQUADS[code])              // POC：阿根廷用真实数据
+    return _cache[code]=window.REAL_SQUADS[code];
+  const t=TMAP[code], r=rng(hash(code));
+  const plan=[["GK",3],["DF",8],["MF",8],["FW",7]];
+  const htR={GK:[188,8],DF:[178,12],MF:[172,13],FW:[172,16]}, posF={GK:.45,DF:.7,MF:.95,FW:1.15};
+  let players=[], num=1, used=new Set();
+  plan.forEach(([pos,cnt])=>{
+    for(let k=0;k<cnt;k++){
+      const li=Math.floor(r()*ENL.length);
+      const a=19+Math.floor(r()*16);
+      const by=2026-a, bm=1+Math.floor(r()*12), bd=1+Math.floor(r()*28);
+      const club=CLUBS[Math.floor(r()*CLUBS.length)];
+      const val=Math.max(1,Math.round(t.st*posF[pos]*(0.25+r()*1.05)));
+      let n=num++; while(used.has(n))n++; used.add(n);
+      players.push({num:n, en:ENF[Math.floor(r()*ENF.length)]+" "+ENL[li], zh:ZHL[li], pos,
+        born:`${by}-${String(bm).padStart(2,"0")}-${String(bd).padStart(2,"0")}`,
+        ht:htR[pos][0]+Math.floor(r()*htR[pos][1]), wt:0, foot:r()<0.76?"右":"左",
+        club:club[0], clubZh:club[1], caps:Math.floor(r()*80), intl:pos==="FW"?Math.floor(r()*30):Math.floor(r()*8),
+        app:18+Math.floor(r()*20), g:pos==="FW"?Math.floor(r()*22):Math.floor(r()*7), a:Math.floor(r()*10), val});
+    }
+  });
+  players.forEach(p=>p.wt=Math.round(p.ht*0.42-12+(p.pos==="FW"?2:0)));
+  // 注入明星
+  (STARS[code]||[]).forEach(s=>{
+    const slot=players.find(p=>p.pos===s.pos&&!p._star)||players[0];
+    Object.assign(slot,{num:s.num,en:s.en,zh:s.zh,pos:s.pos,val:s.val,cap:s.cap||0,_star:1});
+  });
+  _cache[code]=players; return players;
+}
+const D=v=>(v==null||v===""?"–":v);                 // 空字段显示 –（真实数据未抓到时）
+const NV=v=>(v==null?0:v);                           // 数值兜底
+function teamAgg(code){const sq=squad(code);
+  return {total:sq.reduce((s,p)=>s+NV(p.val),0), avgAge:(sq.reduce((s,p)=>s+age(p.born),0)/sq.length),
+    avgHt:Math.round(sq.reduce((s,p)=>s+NV(p.ht),0)/sq.length), caps:sq.reduce((s,p)=>s+NV(p.caps),0),
+    top:sq.slice().sort((a,b)=>NV(b.val)-NV(a.val))[0]};
+}
+
+/* ====== 赛程生成 ====== */
+const VEN=["New York","Dallas","Kansas City","Atlanta","Los Angeles","SF Bay","Houston","Miami","Seattle","Philadelphia","Toronto","Vancouver","Mexico City","Guadalajara","Monterrey","Boston"];
+const TIMES=["13:00","16:00","19:00","22:00"];
+function dstr(d){return d.toISOString().slice(0,10);}
+function addDays(base,n){const d=new Date(base);d.setDate(d.getDate()+n);return d;}
+const OPEN=new Date("2026-06-11");
+let MATCHES=[], mid=0;
+if(window.REAL_FIXTURES && window.REAL_FIXTURES.length){   // 真实赛程（build_all.py 生成 data/fixtures.js）
+  MATCHES=window.REAL_FIXTURES;
+}else{
+GL.split("").forEach((g,gi)=>{
+  const ts=TEAMS.filter(t=>t.grp===g);
+  const pair=[[0,1,0],[2,3,0],[0,2,1],[1,3,1],[3,0,2],[2,1,2]]; // [home,away,matchday]
+  pair.forEach((pp,pi)=>{
+    const [h,a,md]=pp;
+    const day=md*6+(gi%6);                 // 第1/2/3轮各占一段
+    const d=addDays(OPEN,day);
+    const dk=dstr(d), now=dstr(TODAY);
+    let status="", sc=null;
+    if(dk<now){status="FT"; sc=[Math.floor(rng(mid*7+1)()*4),Math.floor(rng(mid*7+5)()*4)];}
+    else if(dk===now){status="LIVE"; sc=[1,1];}
+    MATCHES.push({id:"m"+(mid++), date:dk, time:TIMES[pi%4], home:ts[h].c, away:ts[a].c,
+      venue:VEN[(gi+pi)%VEN.length], round:`小组赛 第${md+1}轮 · ${g}组`, status, score:sc});
+  });
+});
+/* 淘汰赛占位（无具体球队） */
+const KO=[["R32","1/16 决赛","2026-06-29",4],["R32","1/16 决赛","2026-07-01",4],["R16","1/8 决赛","2026-07-05",4],
+  ["QF","1/4 决赛","2026-07-10",2],["QF","1/4 决赛","2026-07-11",2],["SF","半决赛","2026-07-14",1],["SF","半决赛","2026-07-15",1],["F","决赛","2026-07-19",1]];
+KO.forEach(([code,label,date,cnt])=>{for(let i=0;i<cnt;i++){
+  MATCHES.push({id:"k"+(mid++),date,time:TIMES[i%4],ko:true,round:label,label:label==="决赛"?"冠军争夺":`${code} 对阵待定`});
+}});
+}
+const BYDATE={}; MATCHES.forEach(m=>{(BYDATE[m.date]=BYDATE[m.date]||[]).push(m);});
+Object.values(BYDATE).forEach(a=>a.sort((x,y)=>x.time<y.time?-1:1));
+
+/* ==================================================================
+   渲染层
+   ================================================================== */
+const state={tab:"schedule", detail:null};
+const root=document.getElementById("view");
+
+function go(view,param){
+  if(view==="match"||view==="team"){state.detail={view,param};}
+  else{state.tab=view; state.detail=null;}
+  render(); window.scrollTo(0,0);
+}
+document.getElementById("tabs").addEventListener("click",e=>{if(e.target.dataset.t)go(e.target.dataset.t);});
+
+function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",!state.detail&&b.dataset.t===state.tab));
+  const bs=document.getElementById("backslot");
+  if(state.detail){bs.innerHTML='<button class="back" onclick="go(\''+state.tab+'\')">← 返回'+(state.tab==="schedule"?"赛程":"球队")+'</button>';}
+  else bs.innerHTML="";
+  if(state.detail?.view==="match")return renderMatch(state.detail.param);
+  if(state.detail?.view==="team")return renderTeam(state.detail.param);
+  if(state.tab==="teams")return renderTeams();
+  return renderSchedule();
+}
+
+/* ---- 赛程：月历 ---- */
+function chip(m){
+  if(m.ko)return `<div class="m ko"><span class="tm">${m.time}</span><span class="sd" style="color:var(--dimmer)">${m.label}</span></div>`;
+  const h=TMAP[m.home],a=TMAP[m.away];
+  const mid_=m.status==="FT"||m.status==="LIVE"
+    ? `<span class="sc">${m.score[0]}-${m.score[1]}</span>`
+    : `<span class="vs">vs</span>`;
+  const ft=m.status==="FT"?`<span class="ft">完</span>`:m.status==="LIVE"?`<span class="ft">LIVE</span>`:"";
+  return `<div class="m ${m.status==="LIVE"?"live":""}" onclick="go('match','${m.id}')">
+    <span class="tm">${m.time}</span>
+    <span class="sd"><span class="fl">${h.f}</span><span class="c">${h.c}</span> ${mid_} <span class="c">${a.c}</span><span class="fl">${a.f}</span></span>
+    ${ft}</div>`;
+}
+function renderSchedule(){
+  const start=new Date("2026-06-08"), end=new Date("2026-07-19"); // Mon..Sun 跨6周
+  const wd=["一","二","三","四","五","六","日"];
+  let html='<div class="cal">'+wd.map(w=>`<div class="wd">周${w}</div>`).join("");
+  let d=new Date(start);
+  while(d<=end){
+    const k=dstr(d), inT=(k>="2026-06-11"), ms=BYDATE[k]||[];
+    const mo=d.getDate()===1||k===dstr(start)?`<span class="mo">${d.getMonth()+1}月</span>`:"";
+    const today=k===dstr(TODAY)?"today":"";
+    if(!inT&&ms.length===0){html+=`<div class="day empty"><div class="dnum"><span>${d.getDate()}</span>${mo}</div></div>`;}
+    else{html+=`<div class="day ${today}"><div class="dnum"><span>${d.getDate()}</span>${mo}</div>${ms.map(chip).join("")}</div>`;}
+    d=addDays(d,1);
+  }
+  html+="</div>";
+  root.innerHTML=html;
+}
+
+/* ---- 球队：按组平铺 ---- */
+function renderTeams(){
+  let html='<div class="groups">';
+  GL.split("").forEach(g=>{
+    const ts=TEAMS.filter(t=>t.grp===g).sort((a,b)=>a.rk-b.rk);
+    html+=`<div class="grp"><h4>${g} 组</h4>`;
+    ts.forEach(t=>{const ag=teamAgg(t.c);
+      html+=`<div class="tcard" onclick="go('team','${t.c}')">
+        <span class="fl">${t.f}</span>
+        <div class="info"><div class="nm"><span class="en">${t.en}</span><span class="zh">${t.zh}</span></div>
+          <div class="sub">平均 ${ag.avgAge.toFixed(1)} 岁 · 平均 ${ag.avgHt}cm · 国脚 ${ag.caps} 场</div></div>
+        <div class="rk">#${t.rk}<small>FIFA</small></div></div>`;
+    });
+    html+="</div>";
+  });
+  html+="</div>";
+  root.innerHTML=html;
+}
+
+/* ---- 球队花名册详情 ---- */
+const POSG=[["GK","门将","gk"],["DF","后卫","df"],["MF","中场","mf"],["FW","前锋","fw"]];
+function renderTeam(code){
+  const t=TMAP[code], sq=squad(code), ag=teamAgg(code), maxV=Math.max(1,...sq.map(p=>NV(p.val)));
+  const stats=[["平均年龄",`${ag.avgAge.toFixed(1)}<small>岁</small>`],
+    ["平均身高",`${ag.avgHt}<small>cm</small>`],["国脚总出场",`${ag.caps}`],["阵容人数",`${sq.length}`]];
+  let rows="";
+  POSG.forEach(([pc,pl,cl])=>{
+    const arr=sq.filter(p=>p.pos===pc).sort((a,b)=>b.val-a.val);
+    if(!arr.length)return;
+    rows+=`<tr class="grprow"><td colspan="16"><span style="color:var(--${cl})">●</span> ${pl} · ${arr.length}人</td></tr>`;
+    arr.forEach(p=>{rows+=`<tr class="pl">
+      <td class="num">${D(p.num)}</td>
+      <td class="name"><span class="en">${p.en}</span><span class="zh">${p.zh}</span>${p.cap?'<span class="cap">©</span>':''}</td>
+      <td class="dim">${p.pos}</td><td class="dim">${D(p.born)}</td><td>${age(p.born)}</td>
+      <td class="dim">${D(p.ht)}</td><td class="dim">${D(p.wt)}</td><td class="dim">${D(p.foot)}</td>
+      <td class="club">${D(p.clubZh||p.club)}</td>
+      <td>${D(p.caps)}</td><td>${D(p.intl)}</td><td>${D(p.app)}</td><td>${D(p.g)}</td><td>${D(p.a)}</td>
+    </tr>`;});
+  });
+  root.innerHTML=`
+    <div class="hd">
+      <div class="crest"><span class="bigfl">${t.f}</span>
+        <div><div class="nm"><span class="en">${t.en}</span><span class="zh">${t.zh}</span></div>
+          <div class="sub">${t.grp} 组</div>
+          <div class="rk">FIFA 排名 <b>#${t.rk}</b></div></div></div>
+      <div class="stats">${stats.map(s=>`<div class="stat"><div class="v">${s[1]}</div><div class="k">${s[0]}</div></div>`).join("")}</div>
+    </div>
+    <div class="card"><table><thead><tr>
+      <th>#</th><th class="l">球员 Player</th><th>位置</th><th>出生日期</th><th>岁</th><th>身高</th><th>体重</th><th>脚</th>
+      <th class="l">所属俱乐部</th><th>国家队<br>出场</th><th>国家队<br>进球</th><th>赛季<br>出场</th><th>赛季<br>球</th><th>赛季<br>助</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="note">名单来源 Wikipedia 官方名单页；身高 / 中文名 Wikidata；上赛季数据 Sofascore。</div>`;
+}
+
+/* ---- 对战页 ---- */
+function startXI(code){const sq=squad(code);
+  const pick=(p,n)=>sq.filter(x=>x.pos===p).sort((a,b)=>NV(b.val)-NV(a.val)).slice(0,n);
+  return [...pick("GK",1),...pick("DF",4),...pick("MF",3),...pick("FW",3)];
+}
+function xiTable(code){const xi=startXI(code);
+  let rows=xi.map(p=>`<tr class="pl" data-pk="${code}-${p.num}" onclick="showPlayer('${code}',${p.num})">
+    <td class="num">${D(p.num)}</td>
+    <td class="name"><span class="en">${p.en}</span><span class="zh">${p.zh}</span></td>
+    <td class="dim">${p.pos}</td><td>${age(p.born)}</td>
+    <td class="club">${p.clubZh||p.club}</td><td>${D(p.g)}</td><td>${D(p.a)}</td><td>${D(p.rt)}</td></tr>`).join("");
+  return `<table><thead><tr><th>#</th><th class="l">首发 XI</th><th>位</th><th>岁</th><th class="l">俱乐部</th><th>赛季球</th><th>助</th><th>评分</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function renderMatch(id){
+  const m=MATCHES.find(x=>x.id===id); const h=TMAP[m.home],a=TMAP[m.away];
+  state.matchHome=m.home;
+  const hg=teamAgg(m.home),ag=teamAgg(m.away);
+  const scoreHtml=m.status?`<span class="sc">${m.score[0]} - ${m.score[1]}</span>`:`<span class="sc" style="color:var(--dimmer)">vs</span>`;
+  const meta=m.status==="LIVE"?`<span class="mlive">● LIVE 67'</span>`:m.status==="FT"?"全场结束":m.time;
+  const cmp=[["FIFA 排名",`#${h.rk}`,`#${a.rk}`],["平均年龄",hg.avgAge.toFixed(1),ag.avgAge.toFixed(1)],["平均身高",`${hg.avgHt}cm`,`${ag.avgHt}cm`],["国脚总出场",hg.caps,ag.caps]];
+  root.innerHTML=`
+    <div class="mhd">
+      <div class="side" onclick="go('team','${h.c}')"><span class="fl">${h.f}</span>
+        <div><div class="nm"><span class="en">${h.en}</span><span class="zh">${h.zh}</span></div></div></div>
+      <div class="mid">${scoreHtml}<div class="meta">${meta} · ${m.round} · ${m.venue}</div></div>
+      <div class="side r" onclick="go('team','${a.c}')"><span class="fl">${a.f}</span>
+        <div><div class="nm"><span class="en">${a.en}</span><span class="zh">${a.zh}</span></div></div></div>
+    </div>
+    <div class="compare">
+      ${cmp.map(c=>`<div class="cv l">${c[1]}</div><div class="lab">${c[0]}</div><div class="cv r">${c[2]}</div>`).join("")}
+    </div>
+    <div class="h2h">
+      <div class="xi"><h3><span class="fl" style="font-size:18px">${h.f}</span>${h.en} 首发</h3><div class="card">${xiTable(h.c)}</div></div>
+      <div class="xi"><h3><span class="fl" style="font-size:18px">${a.f}</span>${a.en} 首发</h3><div class="card">${xiTable(a.c)}</div></div>
+    </div>
+    <div class="note">点击球员查看资料；点击球队名 / 国旗进入该队完整花名册。</div>
+    <div class="pdrawer" id="pdrawer">
+      <div class="pip" id="pd-pip"></div>
+      <div class="who"><div class="nm" id="pd-name"></div><div class="sub" id="pd-sub"></div></div>
+      <div class="ds" id="pd-stats"></div>
+      <button class="pclose" onclick="closePlayer()">关闭 ✕</button>
+    </div>`;
+}
+function showPlayer(code,num){
+  const t=TMAP[code], p=squad(code).find(x=>x.num===num); if(!p)return;
+  document.querySelectorAll("tr.psel").forEach(e=>e.classList.remove("psel"));
+  const tr=document.querySelector(`tr[data-pk="${code}-${num}"]`); if(tr)tr.classList.add("psel");
+  const pip=document.getElementById("pd-pip");
+  pip.style.background=t.c===state.matchHome?"var(--accent)":"#9fb2e6"; pip.textContent=D(p.num);
+  document.getElementById("pd-name").innerHTML=`<span class="en">${p.en}</span><span class="zh">${p.zh}</span>${p.cap?' <span style="color:var(--gold)">©</span>':''}`;
+  document.getElementById("pd-sub").textContent=`${t.f} ${t.en} · ${p.pos} · ${D(p.born)}（${age(p.born)}岁）· ${D(p.ht)}cm/${D(p.wt)}kg · ${D(p.foot)}脚 · ${p.clubZh||p.club}`;
+  const ds=[["上赛季出场",D(p.app)],["进球",D(p.g)],["助攻",D(p.a)],["赛季评分",D(p.rt)],["国家队出场",D(p.caps)],["国家队进球",D(p.intl)]];
+  document.getElementById("pd-stats").innerHTML=ds.map(d=>`<div class="d"><div class="v">${d[1]}</div><div class="k">${d[0]}</div></div>`).join("");
+  document.getElementById("pdrawer").classList.add("show");
+}
+function closePlayer(){const d=document.getElementById("pdrawer"); if(d)d.classList.remove("show");
+  document.querySelectorAll("tr.psel").forEach(e=>e.classList.remove("psel"));}
+
+/* ===== 主题切换（白天/黑夜，记忆选择） ===== */
+(function(){
+  const btn=document.getElementById("themeBtn"); if(!btn)return;
+  let saved=null; try{saved=localStorage.getItem("wc-theme");}catch(e){}
+  function apply(t){
+    document.documentElement.setAttribute("data-theme", t==="light"?"light":"dark");
+    btn.textContent = t==="light" ? "☀️" : "🌙";
+    try{localStorage.setItem("wc-theme",t);}catch(e){}
+  }
+  apply(saved||"dark");
+  btn.addEventListener("click",()=>{
+    const cur=document.documentElement.getAttribute("data-theme");
+    apply(cur==="light"?"dark":"light");
+  });
+})();
+
+render();
+</script>
+</body>
+</html>
