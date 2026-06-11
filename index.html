@@ -404,7 +404,7 @@ function renderTeam(code){
       <td class="dim">${p.pos}</td><td class="dim">${D(p.born)}</td><td>${age(p.born)}</td>
       <td class="dim">${D(p.ht)}</td><td class="dim">${D(p.wt)}</td><td class="dim">${D(p.foot)}</td>
       <td class="club">${D(p.clubZh||p.club)}</td>
-      <td>${D(p.caps)}</td><td>${D(p.intl)}</td><td>${D(p.app)}</td><td>${D(p.g)}</td><td>${D(p.a)}</td>
+      <td>${D(p.caps)}</td><td>${D(p.intl)}</td>
     </tr>`;});
   });
   root.innerHTML=`
@@ -417,9 +417,9 @@ function renderTeam(code){
     </div>
     <div class="card"><table><thead><tr>
       <th>#</th><th class="l">球员 Player</th><th>位置</th><th>出生日期</th><th>岁</th><th>身高</th><th>体重</th><th>脚</th>
-      <th class="l">所属俱乐部</th><th>国家队<br>出场</th><th>国家队<br>进球</th><th>赛季<br>出场</th><th>赛季<br>球</th><th>赛季<br>助</th>
+      <th class="l">所属俱乐部</th><th>国家队<br>出场</th><th>国家队<br>进球</th>
     </tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="note">名单来源 Wikipedia 官方名单页；身高 / 中文名 Wikidata；上赛季数据 Sofascore。</div>`;
+    <div class="note">名单来源 Wikipedia 官方名单页；身高 / 中文名 Wikidata。</div>`;
 }
 
 /* ---- 对战页 ---- */
@@ -432,8 +432,8 @@ function xiTable(code){const xi=startXI(code);
     <td class="num">${D(p.num)}</td>
     <td class="name"><span class="en">${p.en}</span><span class="zh">${p.zh}</span></td>
     <td class="dim">${p.pos}</td><td>${age(p.born)}</td>
-    <td class="club">${p.clubZh||p.club}</td><td>${D(p.g)}</td><td>${D(p.a)}</td><td>${D(p.rt)}</td></tr>`).join("");
-  return `<table><thead><tr><th>#</th><th class="l">首发 XI</th><th>位</th><th>岁</th><th class="l">俱乐部</th><th>赛季球</th><th>助</th><th>评分</th></tr></thead><tbody>${rows}</tbody></table>`;
+    <td class="club">${p.clubZh||p.club}</td><td>${D(p.caps)}</td><td>${D(p.intl)}</td></tr>`).join("");
+  return `<table><thead><tr><th>#</th><th class="l">首发 XI</th><th>位</th><th>岁</th><th class="l">俱乐部</th><th>国家队<br>出场</th><th>国家队<br>进球</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 function renderMatch(id){
   const m=MATCHES.find(x=>x.id===id); const h=TMAP[m.home],a=TMAP[m.away];
@@ -473,7 +473,7 @@ function showPlayer(code,num){
   pip.style.background=t.c===state.matchHome?"var(--accent)":"#9fb2e6"; pip.textContent=D(p.num);
   document.getElementById("pd-name").innerHTML=`<span class="en">${p.en}</span><span class="zh">${p.zh}</span>${p.cap?' <span style="color:var(--gold)">©</span>':''}`;
   document.getElementById("pd-sub").textContent=`${t.f} ${t.en} · ${p.pos} · ${D(p.born)}（${age(p.born)}岁）· ${D(p.ht)}cm/${D(p.wt)}kg · ${D(p.foot)}脚 · ${p.clubZh||p.club}`;
-  const ds=[["上赛季出场",D(p.app)],["进球",D(p.g)],["助攻",D(p.a)],["赛季评分",D(p.rt)],["国家队出场",D(p.caps)],["国家队进球",D(p.intl)]];
+  const ds=[["国家队出场",D(p.caps)],["国家队进球",D(p.intl)]];
   document.getElementById("pd-stats").innerHTML=ds.map(d=>`<div class="d"><div class="v">${d[1]}</div><div class="k">${d[0]}</div></div>`).join("");
   document.getElementById("pdrawer").classList.add("show");
 }
