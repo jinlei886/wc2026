@@ -1,0 +1,34 @@
+name: update-worldcup-data
+
+# 每天 06:00 全量刷新；世界杯期间(6/11–7/19)每 20 分钟轻量刷新，
+# 以便赛前更新真实首发、赛后刷新比分、淘汰赛自动填充对阵。
+on:
+  schedule:
+    - cron: "0 6 * * *"          # 每天 06:00 UTC：全量（名单/身价/赛程）
+    - cron: "*/20 * 11-30 6 *"   # 6 月赛期：每 20 分钟轻量（赛程/比分/淘汰赛/首发）
+    - cron: "*/20 * 1-19 7 *"    # 7 月赛期：每 20 分钟轻量
+  workflow_dispatch: {}          # 手动触发：全量
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: refresh data
+        run: |
+          # 每天 06:00 与手动触发 → 全量；赛期高频触发 → 仅赛程/比分/首发（轻量、快）
+          if [ "${{ github.event.schedule }}" = "0 6 * * *" ] || [ -z "${{ github.event.schedule }}" ]; then
+            python build_all.py
+          else
+            python build_all.py fixtures
+          fi
+      - name: commit data
+        run: |
+          git config user.name  "wc-bot"
+          git config user.email "wc-bot@users.noreply.github.com"
+          git add data/
+          git commit -m "data: auto update $(date -u +%FT%TZ)" || echo "no changes"
+          git push
